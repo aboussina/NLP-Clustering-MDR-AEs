@@ -17,20 +17,20 @@ This R application perfoms NLP using the Text Mining library (tm).  The workflow
 <br/>
 1.  Preprocessing:  MDR text is set to lower case and numbers, punctuation, whitespace, and stopwords are removed.  In addition, words are stemmed using Porter's algorithm. <br/>
 <code>    
-          docsMDR <- Corpus(DataframeSource(textMDR)) %>% <br/>
-          tm_map(removeNumbers) %>% <br/>
-          tm_map(removePunctuation) %>% <br/>
-          tm_map(content_transformer(tolower)) %>% <br/>
-          tm_map(removeWords, stopwords("english")) %>% <br/>
-          tm_map(stemDocument) %>% <br/>
-          tm_map(stripWhitespace) </code> <br/>
+        docsMDR <- Corpus(DataframeSource(textMDR)) %>% <br/>  
+        tm_map(removeNumbers) %>% <br/>  
+        tm_map(removePunctuation) %>% <br/>  
+        tm_map(content_transformer(tolower)) %>% <br/>  
+        tm_map(removeWords, stopwords("english")) %>% <br/>  
+        tm_map(stemDocument) %>% <br/>  
+        tm_map(stripWhitespace) </code> <br/>  
 <br/>
 2.  A Document Term Matrix is created using term frequency-inverse document frequency weighting (TF-IDF) and a distance matrix is created using Cosine dissimilarity.  Other distance methods were tried (e.g. Euclidean) but cosine appeared to generate the most accurate clustering. <br/>
 <code>   
         dtmMDR <- DocumentTermMatrix(docsMDR,
           control = list(weighting = weightTfIdf)
-        ) %>% <br/>
-          as.matrix() %>% <br/>
+        ) %>% <br/>  
+          as.matrix() %>% <br/>  
           proxy::dist(method = "cosine") 
 </code> 
 <br/>
@@ -50,6 +50,6 @@ Since the use-case for this dashboard is to identify frequent clustering, outlie
 <br/>
 4.  The identified clusters are mapped onto the original term matrix and the results are visualized in 2D following principal component analysis.  Results are limited to the largest 8 clusters to satisfy the use-case of trend identification. <br/>
 <code>    
-        pcaMDR <- prcomp(dtmMDR, rank = 2) %$% x %>%
+        pcaMDR <- prcomp(dtmMDR, rank = 2) %$% x %>%  
           as.data.frame()
 </code>
