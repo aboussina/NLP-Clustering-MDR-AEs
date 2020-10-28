@@ -14,8 +14,8 @@ This Rshiny dashboard allows a user to investigate clusters of MDR (Medical Devi
 
 # Methodology
 This R application perfoms NLP using the Text Mining library (tm).  The workflow is standard and involves the following steps:
-
-1. Preprocessing:  MDR text is set to lower case and numbers, punctuation, whitespace, and stopwords are removed.  In addition, words are stemmed using Porter's algorithm. <br/>
+<br/>
+1.  Preprocessing:  MDR text is set to lower case and numbers, punctuation, whitespace, and stopwords are removed.  In addition, words are stemmed using Porter's algorithm. <br/>
 <code>    
           docsMDR <- Corpus(DataframeSource(textMDR)) %>% <br/>
           tm_map(removeNumbers) %>% <br/>
@@ -25,7 +25,7 @@ This R application perfoms NLP using the Text Mining library (tm).  The workflow
           tm_map(stemDocument) %>% <br/>
           tm_map(stripWhitespace) </code> <br/>
 <br/>
-2. A Document Term Matrix is created using term frequency-inverse document frequency weighting (TF-IDF) and a distance matrix is created using Cosine dissimilarity.  Other distance methods were tried (e.g. Euclidean) but cosine appeared to generate the most accurate clustering. <br/>
+2.  A Document Term Matrix is created using term frequency-inverse document frequency weighting (TF-IDF) and a distance matrix is created using Cosine dissimilarity.  Other distance methods were tried (e.g. Euclidean) but cosine appeared to generate the most accurate clustering. <br/>
 <code>   
         dtmMDR <- DocumentTermMatrix(docsMDR,
           control = list(weighting = weightTfIdf)
@@ -35,12 +35,11 @@ This R application perfoms NLP using the Text Mining library (tm).  The workflow
 </code> 
 <br/>
 <br/>
-
 3.  Clustering is performed with the DBSCAN algorithm.  k-Means was also tested, but produced undesirable results due to its inclusion of outliers: <br/>
 <br/>
-<img src="https://i.imgur.com/jlH2RCk.png" alt="k-Means Undesired Clustering" width="50%">  <br/>
+<img src="https://i.imgur.com/jlH2RCk.png" alt="k-Means Undesired Clustering" width="50%">  
 <br/>
-Since the use-case for this dashboard is to identify frequent clustering, outliers can be ignored and a density-based algorithm (such as DBSCAN) yields better results.  Determination of the epsilon neighborhood size hyperparameter (eps) was done through manual tuning.  Use of kNNdist (k-Nearest Neighbor Distance) could have been used to optimize the results, but would have resulted in slower processing and a reduction in dashboard user experience.  As expected, smaller MDR sets needed greater values of eps to ensure clustering was sensitive enough while larger MDR sets needed smaller values of eps to guarentee specificity.  Thus, a heuristic of <code>eps = min(2.5 / log(numEvents), 0.8)</code> was used. eps was capped at 0.8 since anything greater resulted in massive overclustering. <br/>
+Since the use-case for this dashboard is to identify frequent clustering, outliers can be ignored and a density-based algorithm (such as DBSCAN) yields better results.  Determination of the .  epsilon neighborhood size hyperparameter (eps) was done through manual tuning.  Use of kNNdist (k-Nearest Neighbor Distance) could have been used to optimize the results, but would have resulted in slower processing and a reduction in dashboard user experience.  As expected, smaller MDR sets needed greater values of eps to ensure clustering was sensitive enough while larger MDR sets needed smaller values of eps to guarentee specificity.  Thus, a heuristic of <code>eps = min(2.5 / log(numEvents), 0.8)</code> was used. eps was capped at 0.8 since anything greater resulted in massive overclustering. <br/>
 <code>  
         dbMDR <- dbscan(dtmMDR,
           minPts = 3,
@@ -48,8 +47,8 @@ Since the use-case for this dashboard is to identify frequent clustering, outlie
         )
 </code>
 <br/>
-
-4. The identified clusters are mapped onto the original term matrix and the results are visualized in 2D following principal component analysis.  Results are limited to the largest 8 clusters to satisfy the use-case of trend identification. <br/>
+<br/>
+4.  The identified clusters are mapped onto the original term matrix and the results are visualized in 2D following principal component analysis.  Results are limited to the largest 8 clusters to satisfy the use-case of trend identification. <br/>
 <code>    
         pcaMDR <- prcomp(dtmMDR, rank = 2) %$% x %>%
           as.data.frame()
