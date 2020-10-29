@@ -5,7 +5,7 @@ The FDA requires medical device & pharmaceutical manufacturers to track and tren
 This Rshiny dashboard allows a user to investigate clusters of MDR (Medical Device Report) Adverse Events present in the MAUDE (Manufacturer and User Facility Device Experience) database.  This enables identification of the most frequent recurring events for a given date range, manufacturer, and/or product.  The application calls the openFDA API with user query arguments and processes the event description text.  Clustering is done with unsupervised machine learning, and the results are displayed graphically in 2D with Principal Component Analysis.
 </br>
 </br>
-You can use the dashboard from your browser here:  https://aboussina.shinyapps.io/DBSCAN-Clustering-for-MDR-Text/ , or clone the repo and run app.R within RStudio.
+You can use the dashboard from your browser here:  https://aboussina.shinyapps.io/DBSCAN-Clustering-for-MDR-Text/, or clone the repo and run app.R within RStudio.
 </br>
 </br>
 ![Dashboard Example GIF](https://i.imgur.com/kplT9VJ.gif)
@@ -45,12 +45,12 @@ This R application perfoms NLP using the Text Mining library (tm).  The workflow
 <br/>
 <img src="https://i.imgur.com/jlH2RCk.png" alt="k-Means Undesired Clustering" width="50%">  
 <br/>
-Since the use-case for this dashboard is to identify frequent clustering, outliers can be ignored and a density-based algorithm (such as DBSCAN) yields better results.  Determination of the  epsilon neighborhood size hyperparameter (eps) was done through manual tuning.  Use of kNNdist (k-Nearest Neighbor Distance) could have been used to optimize the results, but would have resulted in slower processing and a reduction in dashboard user experience.  As expected, smaller MDR sets needed greater values of eps to ensure clustering was sensitive enough while larger MDR sets needed smaller values of eps to guarentee specificity.  Thus, a heuristic of <code>eps = min(2.5 / log(numEvents), 0.8)</code> was used. eps was capped at 0.8 since anything greater resulted in massive overclustering. <br/>
+Since the use-case for this dashboard is to identify frequent clustering, outliers can be ignored and a density-based algorithm (such as DBSCAN) yields better results.  Determination of the  epsilon neighborhood size hyperparameter (eps) was done through manual tuning.  Use of kNNdist (k-Nearest Neighbor Distance) could have been used to optimize the results, but would have resulted in slower processing and a reduction in dashboard user experience.  As expected, smaller MDR sets needed greater values of eps to ensure clustering was sensitive enough while larger MDR sets needed smaller values of eps to guarentee specificity.  Thus, a heuristic of `eps = min(2.5 / log(numEvents), 0.8)` was used. eps was capped at 0.8 since anything greater resulted in massive overclustering. <br/>
 ```R
     dbMDR <- dbscan(dtmMDR,  
       minPts = 3,  
-      eps = min(2.5 / log(numEvents), 0.8)
-    )
+      eps = min(2.5 / log(numEvents), 0.8)  
+    ) 
 ```
 <br/>
 
